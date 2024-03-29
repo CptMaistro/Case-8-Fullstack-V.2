@@ -1,9 +1,9 @@
-import express from "express";
+import express from 'express';
 const router = express.Router();
 
 export default router.get('/', async (req, res) => {
     try {
-        const data = await User.find();
+        const data = { username: 'John Doe', password: 'taco'};
         console.log(data);
         res.json(data);
 

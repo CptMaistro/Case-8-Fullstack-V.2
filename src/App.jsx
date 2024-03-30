@@ -3,8 +3,8 @@ import './App.css'
 
 export default function () {
   return <>
-    <Header />
+    {/* <Header /> */}
     <Outlet />
-    <Footer />
+    {/* <Footer /> */}
   </>
 }

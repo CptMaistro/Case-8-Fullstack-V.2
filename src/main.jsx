@@ -10,6 +10,8 @@ import {
 } from "react-router-dom";
 
 // pages
+import Home from "./pages/home";
+import Login from "./pages/login";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

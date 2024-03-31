@@ -1,29 +1,66 @@
 import { LocalStorage } from "node-localstorage";
-
+import fs from "fs";
 const localStorage = new LocalStorage("./localstorage");
 
 export default class User {
-  constructor(name, password) {
-    this.name = name;
-    this.password = password;
+  constructor(username, password) {
+    if (typeof username === "object") {
+      this.username = username.username;
+      this.password = username.password;
+    } else {
+      this.username = username;
+      this.password = password;
+    }
+  }
+
+  static saveAll(users) {
+    // Convert the users array to a JSON string
+    const usersJson = JSON.stringify(users);
+
+
+    // Save the users JSON string to a file
+    fs.writeFileSync("users.json", usersJson);
   }
 
   save() {
-    // Convert the user object to a JSON string
-    const userJson = JSON.stringify(this);
+    // Retrieve existing users from localStorage
+    let users = JSON.parse(localStorage.getItem("users.json"));
 
-    // Save the user JSON string to localStorage
-    localStorage.setItem("user", userJson);
+    // Check if username already exists
+    const existingUser = users.find((user) => user.username === this.username);
+    if (existingUser) {
+      console.log("Username already exists.");
+      return false;
+    }
+
+    // Create user object
+    const newUser = { username: this.username, password: this.password };
+
+    // Append new user to the array of users
+    users.push(newUser);
+
+    // Store updated users array in localStorage
+    localStorage.setItem("users.json", JSON.stringify(users));
+    console.log("User registered successfully.");
+    return true;
   }
 
-  static getUser() {
-    // Retrieve the user JSON string from localStorage
-    const userJson = localStorage.getItem("user");
+  findOne() {
+    // Retrieve existing users from localStorage
+    let users = JSON.parse(localStorage.getItem("users.json"));
 
-    // Parse the JSON string and create a User object
-    const user = JSON.parse(userJson);
+    for (let i = 0; i < users.length; i++) {
+      console.log(users[i]);
+    }
 
-    return user;
+    const existingUser = users.find((user) => user.username === this.username && user.password === this.password);
+    if (existingUser) {
+
+      return existingUser;
+    }
+    else {
+      return "User not found!";
+    }
   }
 
   static getAll() {
@@ -35,7 +72,7 @@ export default class User {
       const key = localStorage.key(i);
       console.log(key);
 
-      if (key == "user") {
+      if (key == "users.json") {
         const userJson = localStorage.getItem(key);
         const user = JSON.parse(userJson);
         users.push(user);

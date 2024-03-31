@@ -15,14 +15,21 @@ app.use(bodyParser.json());
 app.use("/api/users", userRouter);
 
 userRouter.post("/login", (req, res) => {
-  res.send("Login route");
+  // res.send("Login route");
   const { username, password } = req.body;
+  const userToLogin = new User({ username, password });
+
+  let foundUser = userToLogin.findOne();
+  if (foundUser) {
+    res.send(foundUser);
+  }
+
   console.log("username: " + username, "\npassword: " + password);
 });
 userRouter.post("/register", (req, res) => {
   const { username, password } = req.body;
-  const newUser = new User({username, password}); // Initialize the User variable as newUser
-  newUser.save(); 
+  const newUser = new User({ username, password }); // Initialize the User variable as newUser
+  newUser.save();
   res.send(newUser);
 });
 

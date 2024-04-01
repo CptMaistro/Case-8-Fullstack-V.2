@@ -10,22 +10,46 @@ const port = 3000;
 
 const localStorage = new LocalStorage("./localstorage");
 
+// Enable CORS headers
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 app.use(bodyParser.json());
 
 app.use("/api/users", userRouter);
 
-userRouter.post("/login", (req, res) => {
-  // res.send("Login route");
+userRouter.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  const userToLogin = new User({ username, password });
+  let user = new User({ username, password })
 
-  let foundUser = userToLogin.findOne();
-  if (foundUser) {
-    res.send(foundUser);
+  try {
+    // Find user in the database
+    const foundUser = await user.find();
+
+    if (foundUser) {
+      res.status(200).json(foundUser);
+
+    } else {
+      // User not found, send 401 Unauthorized status
+      res.status(401).json({ error: "Invalid username or password" });
+    }
+  } catch (error) {
+    // Handle errors
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 
   console.log("username: " + username, "\npassword: " + password);
 });
+
 userRouter.post("/register", (req, res) => {
   const { username, password } = req.body;
   const newUser = new User({ username, password }); // Initialize the User variable as newUser

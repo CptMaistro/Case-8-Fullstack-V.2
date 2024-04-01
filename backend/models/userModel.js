@@ -45,13 +45,9 @@ export default class User {
     return true;
   }
 
-  findOne() {
-    // Retrieve existing users from localStorage
+  // Retrieve existing users from localStorage
+  find() {
     let users = JSON.parse(localStorage.getItem("users.json"));
-
-    for (let i = 0; i < users.length; i++) {
-      console.log(users[i]);
-    }
 
     const existingUser = users.find((user) => user.username === this.username && user.password === this.password);
     if (existingUser) {
@@ -59,12 +55,13 @@ export default class User {
       return existingUser;
     }
     else {
-      return "User not found!";
+
+      return false;
     }
   }
 
+  // Retrieve all users from localStorage
   static getAll() {
-    // Retrieve all users from localStorage
     const users = [];
     console.log(localStorage.length);
 
